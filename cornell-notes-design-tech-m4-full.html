@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<!-- skill:chrome -->
+<style>
+/* Credit line — bottom-right */
+.design-ui-credit {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  font: 11px/1 system-ui, sans-serif;
+  color: rgba(128,128,128,0.5);
+  pointer-events: none;
+  z-index: 2147483647;
+  transition: opacity 0.4s ease;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+/* Hide chrome on touch devices */
+@media (hover: none) {
+  .design-ui-credit { display: none; }
+}
+
+/* Print fixes */
+@media print {
+  * {
+    transition: none !important;
+    animation: none !important;
+    box-shadow: none !important;
+  }
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .design-ui-credit { display: none !important; }
+}
+
+</style>
+<script>
+(function () {
+    // Design-ui pages are single compositions, so the whole body is editable.
+    function markEditable() {
+        document.body.classList.add('artifact-editable');
+    }
+
+    // Credit badge with idle-fade. Hover devices only.
+    function initChromeUI() {
+        if (!matchMedia('(hover: hover)').matches) return;
+
+        var credit = document.createElement('div');
+        credit.className = 'design-ui-credit';
+        credit.setAttribute('aria-hidden', 'true');
+        credit.innerHTML = '\u{1F49C} by ClickUp Brain';
+        document.body.appendChild(credit);
+
+        var timer = null;
+        var fade = function (out) { credit.style.opacity = out ? '0' : ''; };
+        fade(true);
+        var show = function () {
+            fade(false);
+            clearTimeout(timer);
+            timer = setTimeout(function () { fade(true); }, 3000);
+        };
+        document.addEventListener('mousemove', show);
+        show();
+    }
+
+    function init() {
+        markEditable();
+        initChromeUI();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+</script>
+<!-- /skill:chrome -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cornell Notes: การออกแบบและเทคโนโลยี ม.4 (ฉบับเต็ม)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hue: 245;
+    --bg: oklch(97.5% 0.005 var(--hue));
+    --surface: oklch(99.5% 0.003 var(--hue));
+    --border: oklch(88% 0.012 var(--hue));
+    --border-strong: oklch(72% 0.03 var(--hue));
+    --text-primary: oklch(16% 0.015 var(--hue));
+    --text-secondary: oklch(38% 0.02 var(--hue));
+    --text-tertiary: oklch(52% 0.015 var(--hue));
+    --accent: oklch(48% 0.2 var(--hue));
+    --accent-light: oklch(94% 0.035 var(--hue));
+    --accent-muted: oklch(62% 0.1 var(--hue));
+    --summary-bg: oklch(95.5% 0.018 195);
+    --cue-bg: oklch(96.5% 0.012 var(--hue));
+
+    --ch1: oklch(45% 0.15 165);
+    --ch2: oklch(42% 0.14 290);
+    --ch3: oklch(50% 0.15 145);
+    --ch4: oklch(55% 0.14 75);
+    --ch5: oklch(45% 0.15 165);
+    --ch6: oklch(48% 0.12 20);
+    --ch7: oklch(52% 0.12 230);
+
+    --font-body: 'Sarabun', 'Noto Sans Thai', system-ui, sans-serif;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    background: var(--bg);
+    padding: var(--space-xl) var(--space-xl) var(--space-3xl);
+    font-optical-sizing: auto;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+    padding-bottom: var(--space-xl);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+    letter-spacing: -0.01em;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.95rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+  }
+
+  .page-header .tag {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+
+  .chapter {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: var(--space-2xl);
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .chapter-header {
+    padding: var(--space-lg) var(--space-xl);
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    color: oklch(99% 0.005 0);
+  }
+
+  .ch1 .chapter-header { background: var(--ch1); }
+  .ch2 .chapter-header { background: var(--ch2); }
+  .ch3 .chapter-header { background: var(--ch3); }
+  .ch4 .chapter-header { background: var(--ch4); }
+  .ch5 .chapter-header { background: var(--ch5); }
+  .ch6 .chapter-header { background: var(--ch6); }
+  .ch7 .chapter-header { background: var(--ch7); }
+
+  .chapter-number {
+    background: oklch(100% 0 0 / 0.22);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .section-block {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-block:last-of-type {
+    border-bottom: none;
+  }
+
+  .section-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: var(--space-md) var(--space-xl);
+    background: oklch(95% 0.008 var(--hue));
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.01em;
+  }
+
+  .cornell-grid {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+  }
+
+  .cue-column {
+    background: var(--cue-bg);
+    padding: var(--space-lg);
+    border-right: 2px solid var(--border-strong);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .cue-item {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.45;
+    position: relative;
+    padding-left: var(--space-lg);
+  }
+
+  .cue-item::before {
+    content: "?";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 0.72rem;
+    color: var(--accent-muted);
+    font-weight: 700;
+  }
+
+  .notes-column {
+    padding: var(--space-lg) var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .note-point {
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding-left: var(--space-lg);
+    position: relative;
+  }
+
+  .note-point::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    top: 0;
+    color: var(--accent-muted);
+    font-weight: 700;
+  }
+
+  .note-point strong {
+    font-weight: 600;
+  }
+
+  .note-sub {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    padding-left: calc(var(--space-lg) + var(--space-lg));
+    line-height: 1.55;
+    margin-top: 2px;
+  }
+
+  .note-sub2 {
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    padding-left: calc(var(--space-lg) + var(--space-lg) + var(--space-md));
+    line-height: 1.5;
+    margin-top: 1px;
+  }
+
+  .note-example {
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    padding-left: calc(var(--space-lg) + var(--space-lg));
+    line-height: 1.5;
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .summary-section {
+    border-top: 2px solid var(--border-strong);
+    background: var(--summary-bg);
+    padding: var(--space-lg) var(--space-xl);
+  }
+
+  .summary-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-xs);
+  }
+
+  .summary-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  @media print {
+    body { padding: 12px; background: white; max-width: none; }
+    .chapter { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; margin-bottom: 16px; }
+    .page-header { margin-bottom: 20px; }
+    .section-block { break-inside: avoid; }
+  }
+
+  @media (max-width: 700px) {
+    body { padding: var(--space-md); }
+    .cornell-grid { grid-template-columns: 1fr; }
+    .cue-column {
+      border-right: none;
+      border-bottom: 2px solid var(--border-strong);
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+    }
+    .cue-item { font-size: 0.78rem; }
+    .page-header h1 { font-size: 1.3rem; }
+    .notes-column { padding: var(--space-md); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Cornell Notes: การออกแบบและเทคโนโลยี ม.4</h1>
+  <div class="subtitle">หนังสือเรียนรายวิชาพื้นฐานวิทยาศาสตร์และเทคโนโลยี (สสวท.)</div>
+  <div class="tag">ฉบับเต็ม ตามสารบัญ 7 บท</div>
+</div>
+
+<!-- ===== บทที่ 1 ===== -->
+<div class="chapter ch1">
+  <div class="chapter-header">
+    <div class="chapter-number">1</div>
+    ระบบทางเทคโนโลยีที่ซับซ้อน
+  </div>
+
+  <!-- 1.1 -->
+  <div class="section-block">
+    <div class="section-title">1.1 ระบบทางเทคโนโลยีคืออะไร</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ระบบคืออะไร</div>
+        <div class="cue-item">องค์ประกอบของระบบมีอะไรบ้าง</div>
+        <div class="cue-item">Feedback สำคัญอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ระบบ (System)</strong> คือ กลุ่มของส่วนประกอบที่ทำงานร่วมกันอย่างเป็นระเบียบเพื่อให้บรรลุเป้าหมายที่กำหนด</div>
+        <div class="note-point">องค์ประกอบหลัก 4 ส่วน:</div>
+        <div class="note-sub"><strong>Input (ตัวป้อน)</strong>: สิ่งที่ป้อนเข้าสู่ระบบ เช่น วัตถุดิบ พลังงาน ข้อมูล</div>
+        <div class="note-sub"><strong>Process (กระบวนการ)</strong>: ขั้นตอนการแปลง Input ให้เป็น Output</div>
+        <div class="note-sub"><strong>Output (ผลผลิต)</strong>: ผลลัพธ์ที่ได้จากกระบวนการ</div>
+        <div class="note-sub"><strong>Feedback (ข้อมูลย้อนกลับ)</strong>: ข้อมูลที่ส่งกลับเพื่อปรับปรุงระบบ</div>
+        <div class="note-point">Feedback ทำให้ระบบ<strong>ปรับตัวเอง</strong>ได้ เช่น เครื่องปรับอากาศรับ Feedback จากอุณหภูมิห้องแล้วปรับความเย็น</div>
+        <div class="note-example">ตัวอย่าง: พัดลม → Input = ไฟฟ้า, Process = มอเตอร์หมุนใบพัด, Output = ลม</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.2 -->
+  <div class="section-block">
+    <div class="section-title">1.2 ระบบทางเทคโนโลยีที่ซับซ้อน</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ระบบซับซ้อนต่างจากระบบธรรมดาอย่างไร</div>
+        <div class="cue-item">ระบบย่อยเชื่อมกันอย่างไร</div>
+        <div class="cue-item">ตัวอย่างระบบซับซ้อนมีอะไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ระบบซับซ้อน</strong> ประกอบด้วยระบบย่อย (Subsystem) หลายระบบทำงานสัมพันธ์กัน</div>
+        <div class="note-point">Output ของระบบย่อยหนึ่ง อาจเป็น Input ของอีกระบบย่อยหนึ่ง (เชื่อมโยงแบบลูกโซ่)</div>
+        <div class="note-point">ตัวอย่างระบบซับซ้อน:</div>
+        <div class="note-sub"><strong>รถยนต์</strong> = ระบบเครื่องยนต์ + ระบบเบรก + ระบบส่งกำลัง + ระบบไฟฟ้า + ระบบระบายความร้อน</div>
+        <div class="note-sub"><strong>สมาร์ทโฟน</strong> = ระบบจอสัมผัส + ระบบประมวลผล + ระบบสื่อสาร + ระบบกล้อง + ระบบแบตเตอรี่</div>
+        <div class="note-sub"><strong>โรงงานผลิต</strong> = ระบบจัดเก็บวัตถุดิบ + ระบบผลิต + ระบบตรวจสอบ + ระบบขนส่ง</div>
+        <div class="note-point">ยิ่งระบบซับซ้อน ยิ่งต้องออกแบบให้แต่ละส่วน<strong>ประสานงานกันดี</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 -->
+  <div class="section-block">
+    <div class="section-title">1.3 ระบบทางเทคโนโลยีที่ทำงานผิดพลาด</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">สาเหตุที่ระบบผิดพลาด</div>
+        <div class="cue-item">ผิดพลาดแล้วเกิดอะไรขึ้น</div>
+        <div class="cue-item">จะป้องกันอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">สาเหตุที่ระบบทำงานผิดพลาด:</div>
+        <div class="note-sub">1. ส่วนประกอบเสื่อมสภาพ/ชำรุด</div>
+        <div class="note-sub">2. Input ไม่ถูกต้อง/ไม่เพียงพอ</div>
+        <div class="note-sub">3. การใช้งานผิดวิธี (Human Error)</div>
+        <div class="note-sub">4. สภาพแวดล้อมไม่เหมาะสม (ความชื้น, อุณหภูมิ)</div>
+        <div class="note-point">เมื่อระบบย่อยใดผิดพลาด จะ<strong>ส่งผลกระทบเป็นลูกโซ่</strong>ไปทั้งระบบ</div>
+        <div class="note-example">เช่น ระบบระบายความร้อนรถยนต์พัง → เครื่องยนต์ร้อนเกิน → เครื่องดับ</div>
+        <div class="note-point">การป้องกัน: บำรุงรักษาตามกำหนด, ตรวจสอบ Feedback สม่ำเสมอ, ออกแบบระบบสำรอง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 -->
+  <div class="section-block">
+    <div class="section-title">1.4 การแก้ไขข้อบกพร่องของระบบ</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">วิเคราะห์ข้อบกพร่องอย่างไร</div>
+        <div class="cue-item">ขั้นตอนแก้ไขมีอะไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">ขั้นตอนการวิเคราะห์และแก้ไข:</div>
+        <div class="note-sub">1. <strong>ระบุอาการ</strong>: ระบบแสดงอาการผิดปกติอะไร</div>
+        <div class="note-sub">2. <strong>วิเคราะห์สาเหตุ</strong>: ตรวจสอบระบบย่อยทีละส่วน หาจุดที่เป็นปัญหา</div>
+        <div class="note-sub">3. <strong>เลือกวิธีแก้</strong>: ซ่อมแซม เปลี่ยนชิ้นส่วน หรือออกแบบใหม่</div>
+        <div class="note-sub">4. <strong>ดำเนินการแก้ไข</strong>: ลงมือแก้และทดสอบ</div>
+        <div class="note-sub">5. <strong>ตรวจสอบผล</strong>: ระบบกลับมาทำงานปกติหรือไม่</div>
+        <div class="note-point">ใช้แนวคิด <strong>"แยกส่วน"</strong> (Decomposition) เพื่อหาจุดบกพร่องได้ง่ายขึ้น</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 1</div>
+    <div class="summary-text">เทคโนโลยีทำงานเป็นระบบ (Input → Process → Output → Feedback) ระบบซับซ้อนคือหลายระบบย่อยเชื่อมกัน ถ้าระบบย่อยใดพัง จะกระทบทั้งหมดแบบลูกโซ่ แก้โดยวิเคราะห์แยกส่วน หาจุดบกพร่อง แล้วซ่อม/ออกแบบใหม่</div>
+  </div>
+</div>
+
+<!-- ===== บทที่ 2 ===== -->
+<div class="chapter ch2">
+  <div class="chapter-header">
+    <div class="chapter-number">2</div>
+    การเปลี่ยนแปลงของเทคโนโลยี
+  </div>
+
+  <!-- 2.1 -->
+  <div class="section-block">
+    <div class="section-title">2.1 สาเหตุหรือปัจจัยการเปลี่ยนแปลงของเทคโนโลยี</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ทำไมเทคโนโลยีต้องเปลี่ยน</div>
+        <div class="cue-item">ปัจจัยหลักมีกี่ข้อ</div>
+        <div class="cue-item">ปัจจัยภายในกับภายนอกต่างกันอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">เทคโนโลยีไม่คงที่ เปลี่ยนแปลงตลอดเวลาเพราะ<strong>ความต้องการของมนุษย์ไม่หยุดนิ่ง</strong></div>
+        <div class="note-point">ปัจจัยที่ทำให้เทคโนโลยีเปลี่ยนแปลง:</div>
+        <div class="note-sub"><strong>1. ปัญหาหรือความต้องการของมนุษย์</strong>: ต้องการความสะดวก ปลอดภัย รวดเร็ว ประหยัดมากขึ้น</div>
+        <div class="note-sub"><strong>2. ความก้าวหน้าทางวิทยาศาสตร์</strong>: ค้นพบวัสดุใหม่ ทฤษฎีใหม่ ทำให้พัฒนาเทคโนโลยีใหม่ได้</div>
+        <div class="note-sub"><strong>3. เศรษฐกิจ</strong>: ต้นทุนการผลิต การแข่งขัน ความต้องการตลาด</div>
+        <div class="note-sub"><strong>4. สังคมและวัฒนธรรม</strong>: ค่านิยม ไลฟ์สไตล์ที่เปลี่ยนไป</div>
+        <div class="note-sub"><strong>5. สิ่งแวดล้อม</strong>: ปัญหามลพิษ ภาวะโลกร้อน ผลักดันเทคโนโลยีสีเขียว</div>
+        <div class="note-sub"><strong>6. นโยบายรัฐและกฎหมาย</strong>: กฎระเบียบความปลอดภัย มาตรฐาน</div>
+        <div class="note-point">แบ่งเป็น: <strong>ปัจจัยภายใน</strong> (ข้อจำกัดของตัวเทคโนโลยีเอง) กับ <strong>ปัจจัยภายนอก</strong> (สังคม เศรษฐกิจ กฎหมาย)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.2 -->
+  <div class="section-block">
+    <div class="section-title">2.2 ตัวอย่างการเปลี่ยนแปลงของเทคโนโลยี</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">การเปลี่ยนแปลงมีรูปแบบอะไร</div>
+        <div class="cue-item">ตัวอย่างเทคโนโลยีที่เปลี่ยนแปลง</div>
+        <div class="cue-item">เส้นเวลาใช้ทำอะไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">รูปแบบการเปลี่ยนแปลง:</div>
+        <div class="note-sub"><strong>ปรับปรุง (Improvement)</strong>: ทำของเดิมให้ดีขึ้น เร็วขึ้น ถูกลง</div>
+        <div class="note-sub"><strong>นวัตกรรม (Innovation)</strong>: สร้างสิ่งใหม่ที่ไม่เคยมีมาก่อน</div>
+        <div class="note-point">ตัวอย่างการเปลี่ยนแปลง:</div>
+        <div class="note-sub">โทรศัพท์: บ้าน → มือถือ → สมาร์ทโฟน → โทรศัพท์พับได้</div>
+        <div class="note-sub">การสื่อสาร: จดหมาย → โทรเลข → อีเมล → แชท → วิดีโอคอล</div>
+        <div class="note-sub">แสงสว่าง: เทียน → หลอดไส้ → หลอดฟลูออเรสเซนต์ → LED</div>
+        <div class="note-sub">การเดินทาง: เดินเท้า → ม้า → รถยนต์ → รถไฟฟ้า → รถไร้คนขับ</div>
+        <div class="note-point"><strong>เส้นเวลาเทคโนโลยี (Technology Timeline)</strong> ใช้วิเคราะห์ว่าเทคโนโลยีเปลี่ยนอย่างไรในแต่ละยุค</div>
+        <div class="note-point">สังเกต: ยิ่งยุคหลัง เทคโนโลยียิ่งเปลี่ยนเร็วขึ้น (Exponential Growth)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 2</div>
+    <div class="summary-text">เทคโนโลยีเปลี่ยนเพราะปัจจัยหลายด้าน (ความต้องการ, วิทยาศาสตร์, เศรษฐกิจ, สังคม, สิ่งแวดล้อม, กฎหมาย) โดยเปลี่ยนแบบปรับปรุงหรือสร้างนวัตกรรมใหม่ ใช้เส้นเวลาวิเคราะห์วิวัฒนาการ ยิ่งปัจจุบันยิ่งเปลี่ยนเร็ว</div>
+  </div>
+</div>
+
+<!-- ===== บทที่ 3 ===== -->
+<div class="chapter ch3">
+  <div class="chapter-header">
+    <div class="chapter-number">3</div>
+    ผลกระทบของเทคโนโลยี
+  </div>
+
+  <!-- 3.1 -->
+  <div class="section-block">
+    <div class="section-title">3.1 ผลกระทบของเทคโนโลยีต่อมนุษย์</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ผลกระทบด้านบวกต่อมนุษย์</div>
+        <div class="cue-item">ผลกระทบด้านลบต่อมนุษย์</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ด้านบวก</strong>:</div>
+        <div class="note-sub">อำนวยความสะดวกในชีวิตประจำวัน, ทำงานเร็วขึ้น</div>
+        <div class="note-sub">รักษาโรคได้ดีขึ้น, อายุยืนขึ้น</div>
+        <div class="note-sub">เข้าถึงข้อมูลและการศึกษาได้ง่าย</div>
+        <div class="note-point"><strong>ด้านลบ</strong>:</div>
+        <div class="note-sub">ปัญหาสุขภาพ: สายตาเสีย, ออฟฟิศซินโดรม, นอนดึก</div>
+        <div class="note-sub">พึ่งพาเทคโนโลยีมากเกินไป ขาดทักษะชีวิต</div>
+        <div class="note-sub">ข้อมูลส่วนตัวถูกละเมิด, ภัยไซเบอร์</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.2 -->
+  <div class="section-block">
+    <div class="section-title">3.2 ผลกระทบของเทคโนโลยีต่อสังคมและเศรษฐกิจ</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ผลกระทบต่อสังคม</div>
+        <div class="cue-item">ผลกระทบต่อเศรษฐกิจ</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ต่อสังคม</strong>:</div>
+        <div class="note-sub">บวก: เชื่อมต่อผู้คนทั่วโลก, แบ่งปันความรู้, ลดอุปสรรคด้านระยะทาง</div>
+        <div class="note-sub">ลบ: ช่องว่างทางดิจิทัล (Digital Divide), ข่าวปลอม, การกลั่นแกล้งออนไลน์, แตกแยกในสังคม</div>
+        <div class="note-point"><strong>ต่อเศรษฐกิจ</strong>:</div>
+        <div class="note-sub">บวก: สร้างอาชีพใหม่ (โปรแกรมเมอร์, YouTuber), ผลิตภาพสูงขึ้น, e-commerce ขยายตลาด</div>
+        <div class="note-sub">ลบ: แรงงานถูกแทนที่ด้วยเครื่องจักร/AI, ธุรกิจเก่าล้มหายตายจาก</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.3 -->
+  <div class="section-block">
+    <div class="section-title">3.3 ผลกระทบของเทคโนโลยีต่อสิ่งแวดล้อม</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ผลกระทบบวกต่อสิ่งแวดล้อม</div>
+        <div class="cue-item">ผลกระทบลบต่อสิ่งแวดล้อม</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ด้านบวก</strong>:</div>
+        <div class="note-sub">พลังงานสะอาด (โซลาร์เซลล์, กังหันลม), รีไซเคิล, ลดการใช้กระดาษ</div>
+        <div class="note-sub">ติดตามสภาพอากาศ/มลพิษแบบเรียลไทม์</div>
+        <div class="note-point"><strong>ด้านลบ</strong>:</div>
+        <div class="note-sub">ขยะอิเล็กทรอนิกส์ (e-waste) ย่อยสลายยาก, สารเคมีอันตราย</div>
+        <div class="note-sub">การผลิตปล่อยก๊าซเรือนกระจก, ใช้ทรัพยากรธรรมชาติมากขึ้น</div>
+        <div class="note-sub">การทำเหมืองแร่หายากสำหรับอุปกรณ์อิเล็กทรอนิกส์</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.4 -->
+  <div class="section-block">
+    <div class="section-title">3.4 ตัวอย่างการวิเคราะห์ผลกระทบของเทคโนโลยี</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">วิเคราะห์ผลกระทบอย่างไร</div>
+        <div class="cue-item">ใช้หลักอะไรในการวิเคราะห์</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">ขั้นตอนวิเคราะห์ผลกระทบ:</div>
+        <div class="note-sub">1. ระบุเทคโนโลยีที่จะวิเคราะห์</div>
+        <div class="note-sub">2. วิเคราะห์ผลกระทบแยกทั้ง 4 ด้าน (มนุษย์, สังคม, เศรษฐกิจ, สิ่งแวดล้อม)</div>
+        <div class="note-sub">3. แยกผลบวกและลบในแต่ละด้าน</div>
+        <div class="note-sub">4. ระบุผู้ได้ประโยชน์และผู้เสียประโยชน์</div>
+        <div class="note-sub">5. พิจารณาผลกระทบระยะสั้นและระยะยาว</div>
+        <div class="note-sub">6. สรุปและเสนอแนวทางลดผลกระทบด้านลบ</div>
+        <div class="note-example">ตัวอย่าง: วิเคราะห์ผลกระทบของ "สมาร์ทโฟน" หรือ "รถยนต์ไฟฟ้า" ต่อ 4 ด้าน</div>
+        <div class="note-point">ใช้ตาราง 4 ช่อง (ด้าน × บวก/ลบ) ช่วยจัดระเบียบการวิเคราะห์</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 3</div>
+    <div class="summary-text">เทคโนโลยีทุกอย่างมีผลกระทบทั้งบวกและลบต่อ 4 ด้าน (มนุษย์, สังคม, เศรษฐกิจ, สิ่งแวดล้อม) ต้องวิเคราะห์รอบด้านก่อนนำมาใช้ โดยพิจารณาทั้งระยะสั้น/ยาว และหาทางลดผลเสีย</div>
+  </div>
+</div>
+
+<!-- ===== บทที่ 4 ===== -->
+<div class="chapter ch4">
+  <div class="chapter-header">
+    <div class="chapter-number">4</div>
+    วัสดุและเครื่องมือพื้นฐาน
+  </div>
+
+  <!-- 4.1 -->
+  <div class="section-block">
+    <div class="section-title">4.1 วัสดุ</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">วัสดุแบ่งเป็นกี่ประเภท</div>
+        <div class="cue-item">สมบัติของวัสดุมีอะไร</div>
+        <div class="cue-item">เลือกวัสดุอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ประเภทวัสดุ</strong>:</div>
+        <div class="note-sub"><strong>โลหะ</strong>: เหล็ก, อะลูมิเนียม, ทองแดง → แข็งแรง นำไฟฟ้า นำความร้อน</div>
+        <div class="note-sub"><strong>พอลิเมอร์/พลาสติก</strong>: PE, PP, PVC, อะคริลิก → เบา ขึ้นรูปง่าย กันน้ำ</div>
+        <div class="note-sub"><strong>ไม้</strong>: ไม้สัก ไม้ยาง ไม้อัด MDF → ตัดง่าย น้ำหนักเบา</div>
+        <div class="note-sub"><strong>เซรามิก</strong>: กระเบื้อง แก้ว กระดาษ → ทนความร้อน แต่เปราะ</div>
+        <div class="note-sub"><strong>วัสดุผสม (Composite)</strong>: คาร์บอนไฟเบอร์, ไฟเบอร์กลาส → รวมข้อดีหลายวัสดุ</div>
+        <div class="note-point"><strong>สมบัติของวัสดุ</strong> ที่ต้องพิจารณา:</div>
+        <div class="note-sub">ความแข็ง (Hardness): ทนต่อการขูดขีด</div>
+        <div class="note-sub">ความเหนียว (Toughness): ทนต่อแรงกระแทก ไม่แตกง่าย</div>
+        <div class="note-sub">ความยืดหยุ่น (Elasticity): ยืดแล้วกลับรูปเดิม</div>
+        <div class="note-sub">การนำไฟฟ้า/ความร้อน, ทนการกัดกร่อน, ความหนาแน่น</div>
+        <div class="note-point">เลือกวัสดุตาม: <strong>สมบัติที่ต้องการ + ต้นทุน + ความหาง่าย + ผลกระทบต่อสิ่งแวดล้อม</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.2 -->
+  <div class="section-block">
+    <div class="section-title">4.2 เครื่องมือพื้นฐาน</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">เครื่องมือแบ่งเป็นกี่กลุ่ม</div>
+        <div class="cue-item">ข้อควรระวังในการใช้</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">เครื่องมือพื้นฐานแบ่งตามหน้าที่:</div>
+        <div class="note-sub"><strong>เครื่องมือวัด</strong>: ไม้บรรทัด, ตลับเมตร, เวอร์เนียร์, ฉาก → ใช้วัดขนาด มุม ระยะ</div>
+        <div class="note-sub"><strong>เครื่องมือตัด</strong>: เลื่อยมือ, เลื่อยฉลุ, กรรไกร, คัตเตอร์ → ตัดวัสดุให้ได้รูปร่าง</div>
+        <div class="note-sub"><strong>เครื่องมือเจาะ</strong>: สว่านมือ, สว่านไฟฟ้า, ดอกสว่าน → เจาะรูในวัสดุ</div>
+        <div class="note-sub"><strong>เครื่องมือยึด</strong>: ค้อน, ไขควง, ประแจ, คีมล็อก → ยึดต่อชิ้นส่วน</div>
+        <div class="note-sub"><strong>เครื่องมือตกแต่ง</strong>: กระดาษทราย, ตะไบ, กบ → ทำผิวเรียบ</div>
+        <div class="note-point">ข้อควรระวัง:</div>
+        <div class="note-sub">สวมอุปกรณ์ป้องกัน (แว่น, ถุงมือ), ใช้เครื่องมือให้ถูกประเภท, เก็บให้เป็นที่</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.3 -->
+  <div class="section-block">
+    <div class="section-title">4.3 การตัด ต่อ และขึ้นรูปวัสดุ</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">การตัดวัสดุมีกี่วิธี</div>
+        <div class="cue-item">การต่อวัสดุมีแบบไหนบ้าง</div>
+        <div class="cue-item">การขึ้นรูปคืออะไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>การตัด (Cutting)</strong>:</div>
+        <div class="note-sub">เลื่อย: ตัดไม้, พลาสติก, โลหะบาง</div>
+        <div class="note-sub">คัตเตอร์: ตัดกระดาษ, ฟิวเจอร์บอร์ด, พลาสติกบาง</div>
+        <div class="note-sub">กรรไกร: ตัดแผ่นวัสดุบาง</div>
+        <div class="note-sub">เลเซอร์/CNC: ตัดแม่นยำสูง (เทคโนโลยีสมัยใหม่)</div>
+        <div class="note-point"><strong>การต่อ (Joining)</strong>:</div>
+        <div class="note-sub">ถาวร: กาว, บัดกรี, เชื่อม, ตะปู</div>
+        <div class="note-sub">ชั่วคราว: สกรู, น็อต, สลัก (ถอดประกอบได้)</div>
+        <div class="note-point"><strong>การขึ้นรูป (Forming)</strong>:</div>
+        <div class="note-sub">พับ/ดัด: ใช้กับโลหะแผ่น พลาสติก</div>
+        <div class="note-sub">หล่อ/เท: เทวัสดุเหลวลงแม่พิมพ์ (โลหะ, พลาสเตอร์)</div>
+        <div class="note-sub">ปั๊ม/กด: อัดวัสดุให้เป็นรูปร่างด้วยแรงกด</div>
+        <div class="note-sub">พิมพ์ 3D (3D Printing): สร้างชิ้นงานทีละชั้น จากไฟล์ดิจิทัล</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 4</div>
+    <div class="summary-text">รู้จัก 5 ประเภทวัสดุ (โลหะ, พอลิเมอร์, ไม้, เซรามิก, ผสม) และสมบัติของแต่ละชนิด เลือกใช้ให้เหมาะกับงาน รู้จักเครื่องมือพื้นฐาน 5 กลุ่ม และเทคนิคตัด ต่อ ขึ้นรูป เพื่อสร้างชิ้นงานจริง</div>
+  </div>
+</div>
+
+<!-- ===== บทที่ 5 ===== -->
+<div class="chapter ch5">
+  <div class="chapter-header">
+    <div class="chapter-number">5</div>
+    กลไก ไฟฟ้า และอิเล็กทรอนิกส์
+  </div>
+
+  <!-- 5.1 -->
+  <div class="section-block">
+    <div class="section-title">5.1 กลไก</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">กลไกคืออะไร</div>
+        <div class="cue-item">กลไกพื้นฐานมีกี่แบบ</div>
+        <div class="cue-item">แต่ละแบบใช้ทำอะไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>กลไก (Mechanism)</strong> คือ ชิ้นส่วนที่ทำงานร่วมกันเพื่อเปลี่ยนทิศทาง ขนาด หรือชนิดของการเคลื่อนที่/แรง</div>
+        <div class="note-point">กลไกพื้นฐาน:</div>
+        <div class="note-sub"><strong>เฟือง (Gear)</strong>: เปลี่ยนทิศทางการหมุน, เพิ่ม/ลดความเร็ว (อัตราทด)</div>
+        <div class="note-sub2">เฟืองเล็กหมุนเร็ว แรงน้อย / เฟืองใหญ่หมุนช้า แรงมาก</div>
+        <div class="note-sub"><strong>รอก (Pulley)</strong>: ผ่อนแรง, เปลี่ยนทิศทางแรง</div>
+        <div class="note-sub2">รอกเดี่ยวเปลี่ยนทิศทาง / รอกพวงผ่อนแรง</div>
+        <div class="note-sub"><strong>คาน (Lever)</strong>: ผ่อนแรง ประกอบด้วย จุดหมุน, แรงพยายาม, แรงต้านทาน</div>
+        <div class="note-sub2">3 ประเภท: จุดหมุนอยู่กลาง / แรงต้านอยู่กลาง / แรงพยายามอยู่กลาง</div>
+        <div class="note-sub"><strong>ลูกเบี้ยว (Cam)</strong>: เปลี่ยนการหมุนเป็นการเคลื่อนที่เชิงเส้น (ขึ้น-ลง)</div>
+        <div class="note-sub"><strong>ข้อเหวี่ยง (Crank)</strong>: เปลี่ยนการหมุนเป็นการเคลื่อนที่ไป-กลับ</div>
+        <div class="note-example">ตัวอย่าง: จักรยาน (เฟือง+โซ่), กรรไกร (คาน), ธงชาติขึ้นเสา (รอก)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5.2 -->
+  <div class="section-block">
+    <div class="section-title">5.2 อุปกรณ์ไฟฟ้าและอิเล็กทรอนิกส์</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">อุปกรณ์ไฟฟ้ากับอิเล็กทรอนิกส์ต่างกันอย่างไร</div>
+        <div class="cue-item">อุปกรณ์พื้นฐานมีอะไรบ้าง</div>
+        <div class="cue-item">วงจรไฟฟ้าเบื้องต้น</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>อุปกรณ์ไฟฟ้า</strong>: ใช้พลังงานไฟฟ้าโดยตรง</div>
+        <div class="note-sub">มอเตอร์ (เปลี่ยนไฟฟ้าเป็นการหมุน), หลอดไฟ, สวิตช์, แบตเตอรี่, ฟิวส์</div>
+        <div class="note-point"><strong>อุปกรณ์อิเล็กทรอนิกส์</strong>: ควบคุมกระแสไฟฟ้าขนาดเล็ก</div>
+        <div class="note-sub">LED (ไดโอดเปล่งแสง): ใช้ไฟน้อย อายุยืน แสดงสถานะ</div>
+        <div class="note-sub">ตัวต้านทาน (Resistor): จำกัดกระแสไฟฟ้า</div>
+        <div class="note-sub">ตัวเก็บประจุ (Capacitor): เก็บพลังงานชั่วคราว</div>
+        <div class="note-sub">ทรานซิสเตอร์: เป็นสวิตช์อิเล็กทรอนิกส์ / ขยายสัญญาณ</div>
+        <div class="note-sub">เซนเซอร์: ตรวจจับแสง (LDR), อุณหภูมิ, เสียง, การเคลื่อนไหว</div>
+        <div class="note-point"><strong>วงจรไฟฟ้าพื้นฐาน</strong>: แหล่งจ่ายไฟ → สายไฟ → โหลด (อุปกรณ์) → กลับแหล่งจ่าย</div>
+        <div class="note-sub">วงจรอนุกรม: ต่อเรียง (กระแสเท่ากัน, แรงดันแบ่ง)</div>
+        <div class="note-sub">วงจรขนาน: ต่อคู่ (แรงดันเท่ากัน, กระแสแบ่ง)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5.3 -->
+  <div class="section-block">
+    <div class="section-title">5.3 แผงควบคุมขนาดเล็ก</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">แผงควบคุมขนาดเล็กคืออะไร</div>
+        <div class="cue-item">ตัวอย่างบอร์ดที่ใช้</div>
+        <div class="cue-item">ทำงานอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>แผงควบคุมขนาดเล็ก (Microcontroller Board)</strong> คือ คอมพิวเตอร์ขนาดเล็กที่โปรแกรมสั่งงานได้</div>
+        <div class="note-point">ตัวอย่างบอร์ดที่นิยม:</div>
+        <div class="note-sub">Arduino, micro:bit, ESP32, Raspberry Pi Pico</div>
+        <div class="note-point">หลักการทำงาน:</div>
+        <div class="note-sub"><strong>Input</strong> (เซนเซอร์) → <strong>Process</strong> (ประมวลผลตามโปรแกรม) → <strong>Output</strong> (สั่งงานอุปกรณ์)</div>
+        <div class="note-point">ตัวอย่างการใช้งาน:</div>
+        <div class="note-sub">เซนเซอร์แสง + micro:bit → ถ้ามืดให้เปิด LED อัตโนมัติ</div>
+        <div class="note-sub">เซนเซอร์อุณหภูมิ + Arduino → ถ้าร้อนให้เปิดพัดลม</div>
+        <div class="note-point">เขียนโปรแกรมด้วย <strong>Block-based</strong> (ลากบล็อก) หรือ <strong>Text-based</strong> (เขียนโค้ด เช่น C/Python)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 5</div>
+    <div class="summary-text">กลไก (เฟือง, รอก, คาน, ลูกเบี้ยว) ใช้เปลี่ยนแรงและการเคลื่อนที่ อุปกรณ์ไฟฟ้า/อิเล็กทรอนิกส์ทำให้ระบบทำงานอัตโนมัติ แผงควบคุมขนาดเล็ก (microcontroller) เป็นสมองกลที่เชื่อมเซนเซอร์กับอุปกรณ์ Output ผ่านโปรแกรม</div>
+  </div>
+</div>
+
+<!-- ===== บทที่ 6 ===== -->
+<div class="chapter ch6">
+  <div class="chapter-header">
+    <div class="chapter-number">6</div>
+    กระบวนการออกแบบเชิงวิศวกรรม
+  </div>
+
+  <!-- 6.1 -->
+  <div class="section-block">
+    <div class="section-title">6.1 ขั้นระบุปัญหา</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ทำไมต้องระบุปัญหาให้ชัด</div>
+        <div class="cue-item">ต้องกำหนดอะไรบ้าง</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">ขั้นแรกและ<strong>สำคัญที่สุด</strong>: ถ้าระบุปัญหาผิด ทุกขั้นตอนต่อไปจะผิดหมด</div>
+        <div class="note-point">สิ่งที่ต้องทำ:</div>
+        <div class="note-sub">1. วิเคราะห์สถานการณ์ปัญหาให้ชัดเจน (ปัญหาคืออะไร เกิดกับใคร ที่ไหน)</div>
+        <div class="note-sub">2. กำหนด<strong>เงื่อนไข (Criteria)</strong>: สิ่งที่ต้องทำได้ ผลลัพธ์ที่ต้องการ</div>
+        <div class="note-sub">3. กำหนด<strong>ข้อจำกัด (Constraints)</strong>: เวลา งบประมาณ วัสดุที่หาได้ ขนาด</div>
+        <div class="note-example">ตัวอย่าง: "ออกแบบที่วางโทรศัพท์สำหรับใช้บนโต๊ะเรียน" → เงื่อนไข: รองรับโทรศัพท์ได้, ปรับมุมได้ / ข้อจำกัด: ใช้วัสดุไม่เกิน 50 บาท, ทำเสร็จใน 2 ชั่วโมง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.2 -->
+  <div class="section-block">
+    <div class="section-title">6.2 ขั้นรวบรวมข้อมูลและแนวคิดที่เกี่ยวข้องกับปัญหา</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ต้องรวบรวมข้อมูลอะไร</div>
+        <div class="cue-item">หาข้อมูลจากที่ไหน</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">ข้อมูลที่ต้องรวบรวม:</div>
+        <div class="note-sub">1. <strong>ความรู้ทางวิทยาศาสตร์/คณิตศาสตร์</strong>ที่เกี่ยวข้อง</div>
+        <div class="note-sub">2. <strong>เทคโนโลยีหรือผลิตภัณฑ์ที่มีอยู่แล้ว</strong> (เคยมีใครแก้ปัญหานี้อย่างไร)</div>
+        <div class="note-sub">3. <strong>สมบัติวัสดุ</strong>ที่อาจนำมาใช้</div>
+        <div class="note-sub">4. <strong>ความต้องการของผู้ใช้</strong>จริง</div>
+        <div class="note-point">แหล่งข้อมูล: หนังสือ, อินเทอร์เน็ต, ผู้เชี่ยวชาญ, สังเกตการณ์, สัมภาษณ์ผู้ใช้</div>
+        <div class="note-point">ใช้ <strong>Brainstorming</strong> ระดมความคิด ไม่ตัดสินในขั้นนี้</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.3 -->
+  <div class="section-block">
+    <div class="section-title">6.3 ขั้นออกแบบวิธีการแก้ปัญหา</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ออกแบบอย่างไร</div>
+        <div class="cue-item">ต้องร่างกี่แบบ</div>
+        <div class="cue-item">เลือกแบบอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">ขั้นตอนการออกแบบ:</div>
+        <div class="note-sub">1. <strong>ร่างแบบ (Sketch)</strong> อย่างน้อย 2-3 แนวทาง ที่แตกต่างกัน</div>
+        <div class="note-sub">2. วาดภาพ<strong>แบบร่าง 3 มิติ (Isometric)</strong> หรือภาพฉาย (Orthographic)</div>
+        <div class="note-sub">3. ระบุขนาด วัสดุ ส่วนประกอบในแบบ</div>
+        <div class="note-sub">4. <strong>เปรียบเทียบ</strong>แต่ละแนวทางกับเงื่อนไขและข้อจำกัด</div>
+        <div class="note-sub">5. <strong>เลือกแนวทางที่ดีที่สุด</strong> (ตอบเงื่อนไขมากที่สุด, ข้อจำกัดน้อยที่สุด)</div>
+        <div class="note-point">เครื่องมือออกแบบ: กระดาษ+ดินสอ, โปรแกรม 3D (Tinkercad, SketchUp), แบบจำลอง (Mock-up)</div>
+        <div class="note-point">ใช้<strong>ตารางตัดสินใจ (Decision Matrix)</strong> ช่วยเปรียบเทียบแต่ละแนวทาง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.4 -->
+  <div class="section-block">
+    <div class="section-title">6.4 ขั้นวางแผนและดำเนินการแก้ปัญหา</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">วางแผนอะไรบ้าง</div>
+        <div class="cue-item">สร้างต้นแบบคืออะไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">สิ่งที่ต้องวางแผน:</div>
+        <div class="note-sub">1. <strong>ลำดับขั้นตอน</strong>การทำงาน (ทำอะไรก่อน-หลัง)</div>
+        <div class="note-sub">2. <strong>วัสดุและเครื่องมือ</strong>ที่ต้องใช้ (รายการ + จำนวน)</div>
+        <div class="note-sub">3. <strong>ระยะเวลา</strong>แต่ละขั้น (Gantt Chart หรือตารางเวลา)</div>
+        <div class="note-sub">4. <strong>แบ่งหน้าที่</strong>ในทีม (ถ้าทำงานกลุ่ม)</div>
+        <div class="note-point"><strong>ดำเนินการ</strong>: ลงมือสร้าง<strong>ต้นแบบ (Prototype)</strong> ตามแผน</div>
+        <div class="note-sub">ต้นแบบ = ชิ้นงานจริงที่สร้างขึ้นเพื่อทดสอบว่าใช้งานได้จริงหรือไม่</div>
+        <div class="note-point">ระหว่างทำ<strong>บันทึกปัญหา</strong>ที่เจอ และวิธีแก้ที่ใช้</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.5 -->
+  <div class="section-block">
+    <div class="section-title">6.5 ขั้นทดสอบ ประเมินผล และปรับปรุงแก้ไข</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ทดสอบอย่างไร</div>
+        <div class="cue-item">ประเมินผลเทียบกับอะไร</div>
+        <div class="cue-item">ถ้าไม่ผ่านทำอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>การทดสอบ</strong>:</div>
+        <div class="note-sub">ทดสอบว่าชิ้นงานทำงานได้ตาม<strong>เงื่อนไขที่กำหนดไว้</strong>ในขั้นที่ 1 หรือไม่</div>
+        <div class="note-sub">ทดสอบหลายครั้ง, บันทึกผลเป็นข้อมูล (ตัวเลข, ภาพ, วิดีโอ)</div>
+        <div class="note-point"><strong>การประเมินผล</strong>:</div>
+        <div class="note-sub">เปรียบเทียบผลทดสอบกับเงื่อนไขและข้อจำกัดที่ตั้งไว้</div>
+        <div class="note-sub">ผ่าน = ตอบเงื่อนไขครบ / ไม่ผ่าน = ยังไม่ตอบเงื่อนไขบางข้อ</div>
+        <div class="note-point"><strong>การปรับปรุง</strong>:</div>
+        <div class="note-sub">ถ้าไม่ผ่าน → วิเคราะห์ว่าจุดไหนที่ต้องแก้ → วนกลับไปขั้นที่เหมาะสม</div>
+        <div class="note-sub">อาจแก้ที่วัสดุ, โครงสร้าง, ขนาด, หรือออกแบบใหม่ทั้งหมด</div>
+        <div class="note-point">เป็น<strong>กระบวนการวนซ้ำ (Iterative)</strong>: ทดสอบ → ปรับ → ทดสอบ → ปรับ จนผ่าน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.6 -->
+  <div class="section-block">
+    <div class="section-title">6.6 ขั้นนำเสนอวิธีการแก้ปัญหา</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">นำเสนออะไรบ้าง</div>
+        <div class="cue-item">นำเสนออย่างไรให้ดี</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">สิ่งที่ต้องนำเสนอ:</div>
+        <div class="note-sub">1. ปัญหาที่เลือกแก้ + เงื่อนไข/ข้อจำกัด</div>
+        <div class="note-sub">2. แนวคิดและแนวทางที่เลือก (ทำไมถึงเลือก)</div>
+        <div class="note-sub">3. แบบร่าง/แบบจำลอง</div>
+        <div class="note-sub">4. ขั้นตอนการสร้างชิ้นงาน</div>
+        <div class="note-sub">5. ผลการทดสอบ + การปรับปรุง</div>
+        <div class="note-sub">6. ข้อสรุปและข้อเสนอแนะ</div>
+        <div class="note-point">รูปแบบนำเสนอ: โปสเตอร์, พรีเซนเทชัน, รายงาน, วิดีโอ</div>
+        <div class="note-point">เคล็ดลับ: ใช้ภาพประกอบ, พูดชัด, ตอบคำถามได้, แสดงชิ้นงานจริง</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 6</div>
+    <div class="summary-text">กระบวนการออกแบบเชิงวิศวกรรม 6 ขั้น: ระบุปัญหา (กำหนดเงื่อนไข/ข้อจำกัด) → รวบรวมข้อมูล → ออกแบบ (ร่าง 2-3 แนวทาง เลือกดีสุด) → วางแผนและสร้างต้นแบบ → ทดสอบ/ประเมิน/ปรับปรุง (วนซ้ำได้) → นำเสนอผลงาน เป็นกระบวนการที่ย้อนกลับได้ทุกขั้นจนกว่าจะสำเร็จ</div>
+  </div>
+</div>
+
+<!-- ===== บทที่ 7 ===== -->
+<div class="chapter ch7">
+  <div class="chapter-header">
+    <div class="chapter-number">7</div>
+    กรณีศึกษา: การแก้ปัญหาตามกระบวนการออกแบบเชิงวิศวกรรม
+  </div>
+
+  <!-- กระบวนการที่ 1 -->
+  <div class="section-block">
+    <div class="section-title">กระบวนการที่ 1: การระบุปัญหา</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">เลือกปัญหาอย่างไร</div>
+        <div class="cue-item">เขียนเงื่อนไขอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>สำรวจปัญหา</strong>ในชีวิตประจำวัน สิ่งที่ไม่สะดวก ไม่ปลอดภัย ไม่มีประสิทธิภาพ</div>
+        <div class="note-point">วิธีหาปัญหา:</div>
+        <div class="note-sub">สังเกตรอบตัว, สอบถามผู้อื่น, วิเคราะห์กิจกรรมประจำวัน</div>
+        <div class="note-point">เขียนข้อความ<strong>ปัญหา</strong>ให้ชัดเจน:</div>
+        <div class="note-example">"นักเรียนต้องวางโทรศัพท์บนโต๊ะเพื่อดูวิดีโอเรียนออนไลน์ แต่โทรศัพท์ล้มบ่อยและปรับมุมไม่ได้"</div>
+        <div class="note-point">กำหนด<strong>เงื่อนไข</strong>: รับน้ำหนักโทรศัพท์ได้ 200g, ปรับมุมได้ 3 ระดับ, ตั้งได้มั่นคง</div>
+        <div class="note-point">กำหนด<strong>ข้อจำกัด</strong>: งบ ≤ 80 บาท, เวลา ≤ 3 ชม., วัสดุที่หาได้ในท้องถิ่น</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- กระบวนการที่ 2 -->
+  <div class="section-block">
+    <div class="section-title">กระบวนการที่ 2: การรวบรวมข้อมูลและแนวคิด</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ค้นคว้าอะไรบ้าง</div>
+        <div class="cue-item">ใช้ข้อมูลอย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point">ค้นคว้าข้อมูล:</div>
+        <div class="note-sub">1. ผลิตภัณฑ์ที่มีอยู่ในท้องตลาดที่คล้ายกัน (ข้อดี/ข้อเสีย)</div>
+        <div class="note-sub">2. หลักการทางวิทยาศาสตร์ที่เกี่ยว (เช่น จุดศูนย์กล่าว, แรงเสียดทาน)</div>
+        <div class="note-sub">3. สมบัติวัสดุที่จะใช้ (ไม้อัด, กระดาษแข็ง, พลาสติก)</div>
+        <div class="note-sub">4. ความต้องการจริงของผู้ใช้ (สัมภาษณ์เพื่อน/ครู)</div>
+        <div class="note-point">Brainstorm แนวคิดหลายๆ ทาง ยังไม่ตัดอะไรทิ้ง</div>
+        <div class="note-point">จัดกลุ่มแนวคิดที่ใกล้เคียงกัน เพื่อนำไปร่างแบบในขั้นต่อไป</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- กระบวนการที่ 3 -->
+  <div class="section-block">
+    <div class="section-title">กระบวนการที่ 3: การออกแบบ สร้าง ทดสอบ และนำเสนอ</div>
+    <div class="cornell-grid">
+      <div class="cue-column">
+        <div class="cue-item">ร่างแบบอย่างไร</div>
+        <div class="cue-item">สร้างต้นแบบอย่างไร</div>
+        <div class="cue-item">ทดสอบและปรับปรุงอย่างไร</div>
+        <div class="cue-item">นำเสนออย่างไร</div>
+      </div>
+      <div class="notes-column">
+        <div class="note-point"><strong>ออกแบบ</strong>:</div>
+        <div class="note-sub">ร่างแบบอย่างน้อย 3 แนวทาง พร้อมระบุวัสดุ ขนาด</div>
+        <div class="note-sub">ใช้ตารางตัดสินใจ (Decision Matrix) เปรียบเทียบกับเงื่อนไข</div>
+        <div class="note-sub">เลือกแนวทางที่ได้คะแนนสูงสุด</div>
+        <div class="note-point"><strong>สร้างต้นแบบ</strong>:</div>
+        <div class="note-sub">วางแผนขั้นตอน → จัดเตรียมวัสดุ/เครื่องมือ → ลงมือทำ</div>
+        <div class="note-sub">คำนึงถึงความปลอดภัย, บันทึกขั้นตอนเป็นภาพ/วิดีโอ</div>
+        <div class="note-point"><strong>ทดสอบ</strong>:</div>
+        <div class="note-sub">ทดสอบตามเงื่อนไขทีละข้อ เช่น รับน้ำหนักได้ไหม, ปรับมุมได้ไหม, มั่นคงไหม</div>
+        <div class="note-sub">บันทึกผล: ผ่าน/ไม่ผ่าน แต่ละข้อ</div>
+        <div class="note-point"><strong>ปรับปรุง</strong>:</div>
+        <div class="note-sub">ไม่ผ่านข้อไหน → วิเคราะห์สาเหตุ → แก้ไข → ทดสอบซ้ำ</div>
+        <div class="note-point"><strong>นำเสนอ</strong>:</div>
+        <div class="note-sub">สรุปกระบวนการทั้งหมด: ปัญหา → ข้อมูล → แบบ → สร้าง → ทดสอบ → ปรับปรุง → ผลสำเร็จ</div>
+        <div class="note-sub">แสดงชิ้นงานจริง, เปรียบเทียบก่อน-หลังปรับปรุง</div>
+        <div class="note-point">สิ่งสำคัญ: <strong>บันทึกทุกขั้นตอน</strong>, ทำงานเป็นทีม, รับฟังคำติชม</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-label">สรุปบทที่ 7</div>
+    <div class="summary-text">บทนี้คือ "ภาคปฏิบัติจริง" นำกระบวนการออกแบบเชิงวิศวกรรมทั้ง 6 ขั้นมาใช้แก้ปัญหาจริง ตั้งแต่สำรวจปัญหาในชีวิตประจำวัน กำหนดเงื่อนไข ค้นคว้า ร่างแบบ สร้างต้นแบบ ทดสอบ ปรับปรุง จนนำเสนอ ย้ำว่าต้องบันทึกทุกขั้นตอน ทำซ้ำได้จนสำเร็จ</div>
+  </div>
+</div>
+
+</body>
+</html>
